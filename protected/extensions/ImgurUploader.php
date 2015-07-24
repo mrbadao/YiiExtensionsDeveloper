@@ -162,6 +162,7 @@ class ImgurUploader extends CApplicationComponent
 
     /**
      * delete Album
+     *
      * @param $id
      * @return bool
      */
@@ -177,32 +178,78 @@ class ImgurUploader extends CApplicationComponent
         return true;
     }
 
+
+    /**
+     * Create Album
+     *
+     * @param null $params
+     * @return \Album|null
+     */
     public function createAlbum($params = null)
     {
         $url = str_replace("[:action]", "album", self::ImgUrAPI_DEFAULT_URL);
         $result = self::excuteHTTPSRequest($url, $this->accessToken, $params);
 
-        var_dump($result);
+        if ($result['success']) {
+            $newAlbum = new Album();
+            $newAlbum->setAttributes($result['data']);
+            return $newAlbum;
+        }
+
+        return null;
     }
 
+    /**
+     * Upload Image
+     *
+     * @param null $params
+     * @return \Image|null
+     */
     public function uploadImage($params = null)
     {
-        var_dump($params);
-        $url = str_replace("[:action]", "image", self::ImgUrAPI_DEFAULT_URL);
+        $url = str_replace("[:action]", "image.json", self::ImgUrAPI_DEFAULT_URL);
         $result = self::excuteHTTPSRequest($url, $this->accessToken, $params);
 
-        return $result;
+        if ($result['success']) {
+            $newImage = new Image();
+            $newImage->setAttributes($result['data']);
+            return $newImage;
+        }
+        return null;
     }
-
 
     /**
      * Get credit current user.
+     *
      * @return null
      */
-    public function getCredit(){
+    public function getCredit()
+    {
         $url = str_replace("[:action]", "credits", self::ImgUrAPI_DEFAULT_URL);
         $result = self::excuteHTTPSRequest($url, null, null);
         return isset($result['data']) && $result['data'] == true && $result['success'] ? $result['data'] : null;
+    }
+
+    /**
+     * Update Image Information
+     *
+     * @param $id
+     * @param null $params
+     * @return bool
+     */
+    public function UpdateImageInfo($id, $params = null)
+    {
+        $url = str_replace("[:action]", "image/$id", self::ImgUrAPI_DEFAULT_URL);
+        $result = self::excuteHTTPSRequest($url, $this->accessToken, $params);
+        return $result['success'] ? true : false;
+    }
+
+
+    public function UpdateAlbumInfo($id, $params = null)
+    {
+        $url = str_replace("[:action]", "album/$id", self::ImgUrAPI_DEFAULT_URL);
+        $result = self::excuteHTTPSRequest($url, $this->accessToken, $params);
+        return $result['success'] ? true : false;
     }
 
     private function excuteHTTPSRequest($url, $accessToken = null, $postFields = null, $customRequestMethod = null)
@@ -219,31 +266,20 @@ class ImgurUploader extends CApplicationComponent
 
         if ($accessToken) {
             $header[] = "Authorization:Bearer " . $accessToken;
-//            curl_setopt($curl, CURLOPT_HTTPHEADER, array("Authorization:Bearer " . $accessToken));
         } else {
-            $header[] ="Authorization:Client-ID " . $this->client_id;
-//                curl_setopt($curl, CURLOPT_HTTPHEADER, array("Authorization:Client-ID " . $this->client_id));
+            $header[] = "Authorization:Client-ID " . $this->client_id;
         }
 
         if ($customRequestMethod) curl_setopt($curl, CURLOPT_CUSTOMREQUEST, strtoupper($customRequestMethod));
 
         if ($postFields) {
-            $fields_string = '';
-            foreach ($postFields as $key => $value) {
-                $fields_string .= $key . '=' . $value . '&';
-            }
-            rtrim($fields_string, '&');
-            curl_setopt($curl, CURLOPT_POST, 1);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $fields_string);
-
+            curl_setopt($curl, CURLOPT_POST, count($postFields));
+            curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($postFields));
         }
-        $header[] = "Content-Type:application/x-www-form-urlencoded;charset=UTF-8";
-        curl_setopt ($curl, CURLOPT_HTTPHEADER, $header);
-        $out = curl_exec($curl);
-        $error = curl_error($curl);
-        var_dump($error);
-        curl_close($curl);
 
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        $out = curl_exec($curl);
+        curl_close($curl);
         return json_decode($out, true);
     }
 }

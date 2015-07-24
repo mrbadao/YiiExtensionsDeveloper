@@ -1,5 +1,11 @@
 <form method="post" enctype="multipart/form-data">
-	<input type="file" name="obj">
+	<input type="file" name="file">
+	<input type="text" name="album">
 	<input type="submit">
-	<img src="data:image/png;base64,<?php echo $img;?>">
-</form> 
+</form>
+
+<?php if($res){?>
+<div>
+	<img src="<?php echo $res->getLink();?>">
+</div>
+<?php }?>
