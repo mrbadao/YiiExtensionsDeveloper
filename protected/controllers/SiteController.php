@@ -27,11 +27,11 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $imgUrUploader = Yii::app()->imgUrUploader;
-        $res = '';
-
-        $album = $imgUrUploader->getImages();
-        var_dump($album[4]->_id);
+//        $imgUrUploader = Yii::app()->imgUrUploader;
+//        $res = '';
+//
+//        $album = $imgUrUploader->getImages();
+//        var_dump($album[4]->_id);
 
 //        if (isset($_FILES['file'])) {
 //
@@ -48,12 +48,15 @@ class SiteController extends Controller
 //            $res = $imgUrUploader->uploadImage($pVars);
 //        }
 //        $imgUrUploader->UpdateImageInfo("D7RzY0p",array("title" => "kurumi", "description" => "Kurumi_Tokisaki"));
-        $imgUrUploader->updateAlbumInfo("a3TbU",
-            array(
-                "cover" => "dzxiECE"
-            ));
+//        $imgUrUploader->updateAlbumInfo("a3TbU",
+//            array(
+//                "cover" => "dzxiECE"
+//            ));
 
-        $this->render('index', compact('res'));
+        $phpExcelExt = Yii::app()->PHPExcelExt;
+        $phpExcelExt->exportSample();
+
+//        $this->render('index', compact('res'));
     }
 
 }

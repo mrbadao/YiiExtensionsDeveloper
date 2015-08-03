@@ -52,6 +52,10 @@ return array(
 			'user_id'=>'mrbadao',
         ),
 
+        'PHPExcelExt'=>array(
+            'class'=>'ext.PHPExcelExt',
+        ),
+
 		// uncomment the following to enable URLs in path-format
 		/*
 		'urlManager'=>array(
